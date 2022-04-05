@@ -1,12 +1,9 @@
 /*El proyecto es simular la carga de los productos de una tienda.
-
 Las partes estaticas de la pagina, titulo, descripcion y about us, cambiarlas de acuerdo a lo que escojan que quieran
  que sea la tienda, dentro del HTML.
-
 La seccion de productos debe ser cargada con Javascript, para esto revisar que se deberia crear para cargar 10 productos 
 a la tienda, cada uno debe tener lo que se visualiza (card, imagen, titulo, descripcion, link a la pagina del producto, 
 otro link que lleve a google.com)
-
 Plus, crear una funcion de JS que permita desde consola agregar un producto al HTML*/
 
 //JSON = objetos javascript en formato "string" para poderlos mandar via internet, 
@@ -105,13 +102,17 @@ btnAddProduct.addEventListener("click", function(){
 if (getLocalStorage("products") == null){
     // With fetch you can get data from local or external source
     // this return a promise and use .then methods to manipulate the data
-    fetch ('../json/products.json')
+    fetch ('./json/products.json')
         .then(response=>response.json())// the response is converted to json format
         .then(data=> saveLocalStorage("products", data)) // with the data in json you can print or send to other function
+        .then(()=>{
+            const products = getLocalStorage("products");
+            showProducts(products);
+        })
+} else {
+ const products = getLocalStorage("products");
+ showProducts(products);
 }
-
-const products = getLocalStorage("products");
-showProducts(products);
 
 
 // CRUD - Create - Read - Update - Delete
