@@ -12,107 +12,208 @@ Plus, crear una funcion de JS que permita desde consola agregar un producto al H
 // FUNCIONES
 
 //save in the localStorage
-function saveLocalStorage(key, data){
-    localStorage.setItem(key, JSON.stringify(data));
+function saveLocalStorage(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
 }
 
 //get data from localStorage
-function getLocalStorage(key){
-    return JSON.parse(localStorage.getItem(key));
+function getLocalStorage(key) {
+  return JSON.parse(localStorage.getItem(key));
 }
 
 // function that receives a product object
 // and draw in the document the card presentation for it
-function showProduct(product){
-    const myNode = document.createElement('div');
-    myNode.id = `product-${product.id}`;
-    myNode.classList.add('card', 'col-sm-4');
-   
-    const myNodeCardBody = document.createElement('div');
-    myNodeCardBody.classList.add('card-body');
+function showProduct(product) {
+  const myNode = document.createElement("div");
+  myNode.id = `product-${product.id}`;
+  myNode.classList.add("card", "col-sm-4");
 
-    const myNodeTitle = document.createElement('h5');
-    myNodeTitle.classList.add('card-title');
-    myNodeTitle.textContent = product.title;
-   
-    const myNodeImagen = document.createElement('img');
-    myNodeImagen.classList.add('img-fluid');
-    myNodeImagen.setAttribute('src', product.img_src);
+  const myNodeCardBody = document.createElement("div");
+  myNodeCardBody.classList.add("card-body");
 
-    
-    const myNodedescription = document.createElement('p');
-    myNodedescription.classList.add('card-text');
-    myNodedescription.textContent = product.description;
-   
-    const prodLink = document.createElement("a");
-    prodLink.href = product.prod_link;
-    prodLink.textContent = "Go to the product"
+  const myNodeTitle = document.createElement("h5");
+  myNodeTitle.classList.add("card-title");
+  myNodeTitle.textContent = product.title;
 
-    const googleLink = document.createElement("a");
-    googleLink.href = product.google_link;
-    googleLink.textContent = "google"
+  const myNodeImagen = document.createElement("img");
+  myNodeImagen.classList.add("img-fluid");
+  myNodeImagen.setAttribute("src", product.img_src);
 
-    // anidaciones
+  const myNodedescription = document.createElement("p");
+  myNodedescription.classList.add("card-text");
+  myNodedescription.textContent = product.description;
 
-    myNodeCardBody.appendChild(myNodeImagen);
-    myNodeCardBody.appendChild(myNodeTitle);
-    myNodeCardBody.appendChild(myNodedescription);
-    myNodeCardBody.appendChild(prodLink);
-    myNodeCardBody.appendChild(googleLink);
-    myNode.appendChild(myNodeCardBody);
+  const prodLink = document.createElement("a");
+  prodLink.href = product.prod_link;
+  prodLink.textContent = "Go to the product";
 
-    const DOMitems = document.querySelector("#items");
-    DOMitems.appendChild(myNode);
+  const googleLink = document.createElement("a");
+  googleLink.href = product.google_link;
+  googleLink.textContent = "google";
+
+  const myNodeCardFooter = document.createElement("div");
+  myNodeCardFooter.classList.add("card-footer");
+
+  const buttonProduct = document.createElement("a");
+  buttonProduct.classList.add("btn", "btn-primary");
+  buttonProduct.textContent = "read more";
+  buttonProduct.id = `read-${product.id}`;
+  myNodeCardBody.appendChild(myNodeCardFooter);
+  myNodeCardFooter.appendChild(buttonProduct);
+
+  // anidaciones
+
+  myNodeCardBody.appendChild(myNodeImagen);
+  myNodeCardBody.appendChild(myNodeTitle);
+  myNodeCardBody.appendChild(myNodedescription);
+  myNodeCardBody.appendChild(prodLink);
+  myNodeCardBody.appendChild(googleLink);
+  myNode.appendChild(myNodeCardBody);
+
+  const DOMitems = document.querySelector("#items");
+  DOMitems.appendChild(myNode);
 }
 
-// myProducts is an array of product objects, iterate throught it and call showProduct function to draw in DOM 
+// myProducts is an array of product objects, iterate throught it and call showProduct function to draw in DOM
 function showProducts(myProducts) {
-    myProducts.forEach((product) => {
-        showProduct(product);
-    });
+  const DOMitems = document.querySelector("#items");
+  DOMitems.innerHTML = "";
+  myProducts.forEach((product) => {
+    showProduct(product);
+  });
 }
 
 const btnAddProduct = document.querySelector("#btn-add-product");
+const btnEditProduct = document.querySelector("#btn-edit-product");
+const btnDeleteProduct = document.querySelector("#btn-delete-product");
 
-btnAddProduct.addEventListener("click", function(){
-    const title = document.querySelector("#input-title");
-    const description = document.querySelector("#input-description");
-    const imageUrl = document.querySelector("#input-image");
-    const productLink = document.querySelector("#input-product-link");
-    const googleLink = document.querySelector("#input-google-link");
+btnAddProduct.addEventListener("click", function () {
+  const title = document.querySelector("#input-title");
+  const description = document.querySelector("#input-description");
+  const imageUrl = document.querySelector("#input-image");
+  const productLink = document.querySelector("#input-product-link");
+  const googleLink = document.querySelector("#input-google-link");
 
-    let products = getLocalStorage("products");
+  let products = getLocalStorage("products");
 
-    let product = {
-        id: products.length + 1,
-        title: title.value,
-        description: description.value,
-        img_src: imageUrl.value,
-        prod_link: productLink.value,
-        google_link: googleLink.value
+  let product = {
+    id: products.length + 1,
+    title: title.value,
+    description: description.value,
+    img_src: imageUrl.value,
+    prod_link: productLink.value,
+    google_link: googleLink.value,
+  };
+  showProduct(product);
+  products.push(product);
+  saveLocalStorage("products", products);
+});
+
+btnEditProduct.addEventListener("click", function () {
+  const id = document.querySelector("#input-id");
+  const title = document.querySelector("#input-title");
+  const description = document.querySelector("#input-description");
+  const imageUrl = document.querySelector("#input-image");
+  const productLink = document.querySelector("#input-product-link");
+  const googleLink = document.querySelector("#input-google-link");
+
+  let product = {
+    id: id.value,
+    title: title.value,
+    description: description.value,
+    img_src: imageUrl.value,
+    prod_link: productLink.value,
+    google_link: googleLink.value,
+  };
+  editProduct(id.value, product);
+});
+
+function editProduct(id, object) {
+  let products = JSON.parse(localStorage.getItem("products"));
+  products.forEach((product) => {
+    if (product.id == id) {
+      product.title = object.title;
+      product.description = object.description;
+      product.img_src = object.img_src;
+      product.prod_link = object.prod_link;
+      product.google_link = object.google_link;
     }
-    showProduct(product);
-    products.push(product);
-    saveLocalStorage("products", products);
-})
+  });
 
-// PROGRAMA PRINCIPAL
+  //add in the variable the object with id(index) and add the new properties and show this in console
+  saveLocalStorage("products", products);
+  //document.getElementById('card-body').reset();
+  showProducts(products);
+}
 
-// ask for info in local storage to avoid rewrite it
-if (getLocalStorage("products") == null){
-    // With fetch you can get data from local or external source
-    // this return a promise and use .then methods to manipulate the data
-    fetch ('./json/products.json')
-        .then(response=>response.json())// the response is converted to json format
-        .then(data=> saveLocalStorage("products", data)) // with the data in json you can print or send to other function
-        .then(()=>{
-            const products = getLocalStorage("products");
-            showProducts(products);
-        })
-} else {
- const products = getLocalStorage("products");
- showProducts(products);
+btnDeleteProduct.addEventListener("click", function () {   
+
+    const id = document.querySelector("#input-id");
+    deleteProduct(id.value);
+   
+  });
+
+function deleteProduct(id) {
+    //console.log(id)
+  const products = getLocalStorage("products");
+  for (let i = 0; i < products.length; i++) {
+    if (products[i].id == id) {
+      products.splice(i, 1);
+    }
+  }
+  saveLocalStorage('products', products);
+  showProducts(products);
 }
 
 
-// CRUD - Create - Read - Update - Delete
+
+function readProducts(id,title,description,imageUrl,productLink,googleLink) {
+  const id_form = document.querySelector("#input-id");
+  const title_form = document.querySelector("#input-title");
+  const description_form = document.querySelector("#input-description");
+  const image = document.querySelector("#input-image");
+  const product_form = document.querySelector("#input-product-link");
+  const google = document.querySelector("#input-google-link");
+
+  id_form.value = id;
+  title_form.value = title;
+  description_form.value = description;
+  image.value = imageUrl;
+  product_form.value = productLink;
+  google.value = googleLink;
+}
+
+//ROGRAMA PRINCIPAL
+
+// ask for info in local storage to avoid rewrite it
+if (getLocalStorage("products") == null) {
+  // With fetch you can get data from local or external source
+  // this return a promise and use .then methods to manipulate the data
+  fetch("./json/products.json")
+    .then((response) => response.json()) // the response is converted to json format
+    .then((data) => saveLocalStorage("products", data)) // with the data in json you can print or send to other function
+    .then(() => {
+      const products = getLocalStorage("products");
+      showProducts(products);
+    });
+} else {
+  const products = getLocalStorage("products");
+  showProducts(products);
+
+  products.forEach((product) => {
+    const buttonProduct = document.querySelector(`#read-${product.id}`);
+    buttonProduct.addEventListener("click", function () {
+      readProducts(
+        product.id,
+        product.title,
+        product.description,
+        product.img_src,
+        product.prod_link,
+        product.google_link
+      );
+    });
+  });
+}
+
+
+
