@@ -21,6 +21,10 @@ function getLocalStorage(key) {
   return JSON.parse(localStorage.getItem(key));
 }
 
+function resetForm(){
+  document.querySelector('#form-card').reset();
+}
+
 // function that receives a product object
 // and draw in the document the card presentation for it
 function showProduct(product) {
@@ -107,6 +111,8 @@ btnAddProduct.addEventListener("click", function () {
   showProduct(product);
   products.push(product);
   saveLocalStorage("products", products);
+  resetForm();
+  refrescarPagina();
 });
 
 btnEditProduct.addEventListener("click", function () {
@@ -126,6 +132,8 @@ btnEditProduct.addEventListener("click", function () {
     google_link: googleLink.value,
   };
   editProduct(id.value, product);
+  resetForm();
+  refrescarPagina();
 });
 
 function editProduct(id, object) {
@@ -150,6 +158,8 @@ btnDeleteProduct.addEventListener("click", function () {
 
     const id = document.querySelector("#input-id");
     deleteProduct(id.value);
+    resetForm();
+    refrescarPagina();
    
   });
 
@@ -165,8 +175,20 @@ function deleteProduct(id) {
   showProducts(products);
 }
 
+//creamo la función refrescar pagina que se le pasamos al boton add, edit y delete
+function refrescarPagina(){
+  location.reload();
+  }
 
-
+//Creamos el evento onload detectamos la carga de la pagina con el evento windows onload
+// window.onload = () =>{
+//   //invocamos la función de tiempo
+//   setTimeout(() => { 
+//     //nos referimos al tag del body
+//     document.getElementsByTagName('body')[0].style.background = 'blue';
+//     //dados 3 segundos la pagina recarga
+//   }, 3000)
+// }
 function readProducts(id,title,description,imageUrl,productLink,googleLink) {
   const id_form = document.querySelector("#input-id");
   const title_form = document.querySelector("#input-title");
